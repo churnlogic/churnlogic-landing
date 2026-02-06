@@ -31,6 +31,99 @@
 
     a { color: var(--accent); text-decoration: none; }
 
+    .strategy-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      background: rgba(34, 197, 94, 0.16);
+      color: var(--good);
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .card-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .card-art-main,
+    .card-art-small {
+      border-radius: 8px;
+      background: radial-gradient(circle at top left, #38bdf8, #0f172a 55%);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-art-main {
+      width: 120px;
+      height: 76px;
+      flex-shrink: 0;
+    }
+
+    .card-art-small {
+      width: 52px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .card-chip {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 18px;
+      height: 14px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+      opacity: 0.85;
+    }
+
+    .card-lines {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 40px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    .card-lines::before,
+    .card-lines::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      height: 2px;
+      border-radius: 999px;
+      background: rgba(226, 232, 240, 0.75);
+    }
+
+    .card-lines::before { top: 3px; }
+    .card-lines::after { bottom: 3px; }
+
+    .substep-label {
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    .substep-muted {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -221,45 +314,59 @@
         </div>
       
         <div class="mock">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-              <h3>Personalized Strategy</h3>
-              <span style="font-size: 0.7rem; background: rgba(34, 197, 94, 0.2); color: var(--good); padding: 2px 8px; border-radius: 4px;">Verified 0/24 Status</span>
+          <div class="strategy-header">
+            <h3>Personalized Strategy</h3>
+            <span class="pill">Verified 0/24 status</span>
           </div>
-          
-          <div style="display: flex; gap: 16px; margin-bottom: 24px; align-items: center;">
-              <img src="https://www.chase.com/content/dam/chase-ux/cards/images/chase-sapphire-preferred-card-art.png" 
-                   alt="Chase Sapphire Preferred" 
-                   style="width: 110px; height: auto; border-radius: 6px; box-shadow: 0 8px 16px rgba(0,0,0,0.6); flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);">
+
+          <!-- Main recommended card -->
+          <div class="card-row" style="margin-bottom: 20px;">
+            <div class="card-art-main" aria-hidden="true">
+              <div class="card-chip"></div>
+              <div class="card-lines"></div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 1rem;">Chase Sapphire Preferred</div>
+              <div style="color: var(--good); font-size: 0.8rem; font-weight: 600;">High approval confidence</div>
+              <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">
+                Based on your current profile and recent applications.
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="font-size: 0.8rem; margin-bottom: 4px;">
+            <span>Welcome bonus</span><strong>60,000 points (est. value ~$750)</strong>
+          </div>
+          <div class="row" style="font-size: 0.8rem;">
+            <span>Application timing</span><strong>Eligible now</strong>
+          </div>
+          <div class="bar" style="margin: 10px 0 22px;"><div></div></div>
+
+          <!-- Roadmap -->
+          <div style="border-top: 1px solid var(--border); padding-top: 18px;">
+            <h4 style="font-size: 0.75rem; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+              Next six months
+            </h4>
+
+            <div class="card-row" style="margin-bottom: 12px;">
+              <div class="card-art-small" aria-hidden="true">
+                <div class="card-chip" style="top: 6px; left: 6px; width: 14px; height: 10px;"></div>
+              </div>
               <div>
-                  <div style="font-weight: bold; font-size: 1rem; color: #fff;">Chase Sapphire Preferred®</div>
-                  <div style="color: var(--good); font-size: 0.8rem; font-weight: 600;">95% Approval Confidence</div>
+                <div style="font-size: 0.85rem;">Amex Gold Card</div>
+                <div class="substep-label">Wait 90 days</div>
               </div>
-          </div>
-        
-          <div class="row" style="font-size: 0.8rem; margin-bottom: 4px;"><span>Welcome Bonus</span><strong>60k pts (~$750)</strong></div>
-          <div class="row" style="font-size: 0.8rem;"><span>Application Window</span><strong>Apply Now</strong></div>
-          <div class="bar" style="margin-bottom: 24px;"><div></div></div>
-          
-          <div style="border-top: 1px solid var(--border); padding-top: 20px;">
-              <h4 style="font-size: 0.75rem; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Your Next 6 Months</h4>
-              
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; opacity: 0.9;">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                      <img src="https://icm.aexp-static.com/Internet/Acquisition/US_en/AppConfig/One/PRC/CardArt/Gold-Card.png" 
-                           style="width: 45px; height: auto; border-radius: 2px;">
-                      <span style="font-size: 0.85rem;">Amex Gold Card</span>
-                  </div>
-                  <span style="font-size: 0.75rem; color: var(--accent);">Wait 90 Days</span>
+            </div>
+
+            <div class="card-row" style="opacity: 0.8;">
+              <div class="card-art-small" aria-hidden="true" style="filter: grayscale(25%);">
+                <div class="card-chip" style="top: 6px; left: 6px; width: 14px; height: 10px;"></div>
               </div>
-        
-              <div style="display: flex; align-items: center; justify-content: space-between; opacity: 0.7;">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                      <img src="https://www.capitalone.com/assets/credit-cards/venture-x/venture-x-card-art.png" 
-                           style="width: 45px; height: auto; border-radius: 2px; filter: grayscale(20%);">
-                      <span style="font-size: 0.85rem;">Venture X</span>
-                  </div>
-                  <span style="font-size: 0.75rem; color: var(--muted);">Step 3</span>
+              <div>
+                <div style="font-size: 0.85rem;">Capital One Venture X</div>
+                <div class="substep-muted">Step 3 in your plan</div>
               </div>
+            </div>
           </div>
         </div>
       </section>

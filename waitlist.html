@@ -43,8 +43,6 @@
       font-size: 0.9rem;
     }
 
-    .back-link:hover { color: var(--accent); }
-
     .form-card {
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--border);
@@ -62,7 +60,6 @@
       font-size: 0.85rem;
       margin-bottom: 8px;
       color: var(--text);
-      font-weight: 500;
     }
 
     input, select {
@@ -76,11 +73,6 @@
       font-size: 1rem;
     }
 
-    input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
     .cta {
       display: block;
       width: 100%;
@@ -90,19 +82,17 @@
       background: linear-gradient(to right, #0ea5e9, #22c55e);
       color: #020617;
       font-weight: 700;
-      text-decoration: none;
       border: none;
       cursor: pointer;
       font-size: 1rem;
-      transition: transform 0.2s ease;
     }
 
-    .cta:hover { transform: translateY(-2px); }
-
-    footer {
-      margin-top: 32px;
-      font-size: 0.8rem;
-      color: var(--muted);
+    #status-msg {
+      display: none;
+      padding: 20px;
+      text-align: center;
+      color: #22c55e;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -112,35 +102,59 @@
   <a href="index.html" class="back-link">← Back to home</a>
   
   <div class="form-card">
-    <h1>Join the Beta</h1>
-    <p>We're opening access in batches to ensure the recommendation engine is perfect.</p>
+    <div id="form-content">
+      <h1>Join the Beta</h1>
+      <p>Request early access to the ChurnLogic engine.</p>
 
-    <form action="https://formspree.io/f/mpqjabnp" method="POST">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      <form id="waitlist-form" action="https://formspree.io/f/mpqjabnp" method="POST">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
 
-      <label for="goal">What is your primary goal?</label>
-      <select id="goal" name="goal">
-        <option value="travel">Travel Rewards (Points/Miles)</option>
-        <option value="cashback">Pure Cash Back</option>
-        <option value="business">Business Spending Optimization</option>
-      </select>
+        <label for="source">How did you hear about us?</label>
+        <select id="source" name="source">
+          <option value="" disabled selected>Select an option</option>
+          <option value="reddit">Reddit</option>
+          <option value="twitter">X / Twitter</option>
+          <option value="blog">Blog or Newsletter</option>
+          <option value="friend">Word of Mouth</option>
+          <option value="other">Other</option>
+        </select>
 
-      <label for="status">Current 5/24 Status (if known)</label>
-      <select id="status" name="status">
-        <option value="unknown">I'm not sure</option>
-        <option value="under">Under 5/24</option>
-        <option value="over">Over 5/24</option>
-      </select>
+        <label for="interest">What's your main goal?</label>
+        <input type="text" id="interest" name="interest" placeholder="e.g. Planning my next Chase card">
 
-      <button type="submit" class="cta">Request Invite</button>
-    </form>
+        <button type="submit" class="cta">Request Beta Access</button>
+      </form>
+    </div>
+
+    <div id="status-msg">
+      <h2>You're on the list!</h2>
+      <p style="margin-top: 10px; color: var(--muted);">Keep an eye on your inbox. We'll reach out as soon as a spot opens up.</p>
+    </div>
   </div>
-
-  <footer>
-    Securely handled by ChurnLogic. No data is ever sold.
-  </footer>
 </div>
+
+<script>
+  const form = document.getElementById("waitlist-form");
+  const formContent = document.getElementById("form-content");
+  const statusMsg = document.getElementById("status-msg");
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (response.ok) {
+      formContent.style.display = "none";
+      statusMsg.style.display = "block";
+    } else {
+      alert("Oops! There was a problem. Please try again.");
+    }
+  };
+</script>
 
 </body>
 </html>

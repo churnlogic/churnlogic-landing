@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChurnLogic — Sign in</title>
+  <style>
+    :root { --bg:#050816; --card:#0f172a; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --accent:#10b981; --accent-dark:#022c22; --err:#f87171; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card { width:100%; max-width:420px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; }
+    h1 { font-size:1.25rem; margin:0 0 8px; font-weight:700; }
+    p.sub { margin:0 0 20px; font-size:0.9rem; color:var(--muted); line-height:1.5; }
+    label { display:block; font-size:0.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+    input[type="password"] { width:100%; padding:14px; border-radius:10px; border:1px solid var(--border); background:#1e293b; color:var(--text); font-size:1rem; margin-bottom:16px; }
+    input:focus { outline:2px solid var(--accent); outline-offset:1px; }
+    button,.btn { display:inline-flex; align-items:center; justify-content:center; width:100%; padding:14px 18px; border-radius:10px; border:none; font-size:1rem; font-weight:700; cursor:pointer; text-decoration:none; text-align:center; }
+    .btn-primary { background:var(--accent); color:var(--accent-dark); }
+    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+    .err { color:var(--err); font-size:0.875rem; margin-bottom:16px; line-height:1.4; }
+    .ok { color:var(--accent); font-size:0.9rem; line-height:1.5; }
+    .mono { font-family:ui-monospace,monospace; font-size:0.75rem; word-break:break-all; color:var(--muted); margin-top:16px; }
+    #state-loading { text-align:center; color:var(--muted); }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="state-loading"><h1>Signing you in&hellip;</h1><p class="sub">One moment while we connect your account.</p></div>
+    <div id="state-password" class="hidden">
+      <h1>Set a new password</h1>
+      <p class="sub">You opened a password reset link. Choose a new password for your ChurnLogic account.</p>
+      <div id="password-error" class="err hidden"></div>
+      <label for="pw1">New password</label>
+      <input id="pw1" type="password" autocomplete="new-password" minlength="6" />
+      <label for="pw2">Confirm password</label>
+      <input id="pw2" type="password" autocomplete="new-password" minlength="6" />
+      <button type="button" class="btn btn-primary" id="btn-save-pw">Update password</button>
+    </div>
+    <div id="state-app" class="hidden">
+      <h1>You're signed in</h1>
+      <p class="sub">Open the ChurnLogic app on your phone to continue. If the app doesn't open automatically, use the button below.</p>
+      <a class="btn btn-primary" id="open-app" href="#">Open ChurnLogic</a>
+      <p class="mono" id="app-hint"></p>
+    </div>
+    <div id="state-error" class="hidden">
+      <h1>Something went wrong</h1>
+      <p class="err" id="error-text"></p>
+      <p class="sub">Request a new link from the ChurnLogic app (Forgot password or sign-in link).</p>
+    </div>
+    <div id="state-done" class="hidden">
+      <h1>Password updated</h1>
+      <p class="ok">Your password is saved. Close this tab and sign in with your email and new password in the ChurnLogic app.</p>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+(function(){
+  var SUPABASE_URL="https://sxbrkvzdbetijwjwxkpb.supabase.co";
+  var SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4YnJrdnpkYmV0aWp3and4a3BiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1OTgyNjQsImV4cCI6MjA4OTE3NDI2NH0.1jOcX0FHS3-8pwChm1pHUFlg-bOKSB8nzOcts80rVcA";
+  var APP_DEEP_LINK_BASE="churnlogic://auth/callback";
+  var supabaseClient=null;
+  function show(id){
+    ["state-loading","state-password","state-app","state-error","state-done"].forEach(function(s){
+      var el=document.getElementById(s);
+      if(el) el.classList.toggle("hidden", s!==id);
+    });
+  }
+  function parseFragment(){
+    var hash=window.location.hash.replace(/^#/,"");
+    if(!hash) return {};
+    var q=hash.indexOf("?");
+    var segment=q===-1?hash:hash.substring(0,q);
+    return Object.fromEntries(new URLSearchParams(segment).entries());
+  }
+  function parseQuery(){
+    return Object.fromEntries(new URLSearchParams(window.location.search).entries());
+  }
+  function buildAppDeepLink(){
+    var h=window.location.hash, s=window.location.search;
+    if(h&&h.length>1) return APP_DEEP_LINK_BASE+h;
+    if(s&&s.length>1) return APP_DEEP_LINK_BASE+s.replace("?","#");
+    return APP_DEEP_LINK_BASE;
+  }
+  async function init(){
+    supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{detectSessionInUrl:true,persistSession:false}});
+    var fragment=parseFragment(), query=parseQuery();
+    var authType=fragment.type||query.type||"";
+    var flowRecovery=(query.flow==="recovery");
+    var code=query.code;
+    try{
+      if(code){
+        var ex=await supabaseClient.auth.exchangeCodeForSession(window.location.href);
+        if(ex.error) throw ex.error;
+      } else if(fragment.access_token&&fragment.refresh_token){
+        var sr=await supabaseClient.auth.setSession({access_token:fragment.access_token,refresh_token:fragment.refresh_token});
+        if(sr.error) throw sr.error;
+      } else {
+        show("state-error");
+        document.getElementById("error-text").textContent="This link is missing authentication data. It may have expired\u2014request a new one from the app.";
+        return;
+      }
+      if(authType==="recovery"||flowRecovery){
+        show("state-password");
+        document.getElementById("btn-save-pw").onclick=onSavePassword;
+        return;
+      }
+      var deepLink=buildAppDeepLink();
+      show("state-app");
+      document.getElementById("open-app").href=deepLink;
+      document.getElementById("app-hint").textContent="If the button doesn't work, copy this link and open it on your phone: "+deepLink;
+      var hashHasTokens=window.location.hash&&window.location.hash.indexOf("access_token")!==-1;
+      if(hashHasTokens&&/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) window.location.href=deepLink;
+    }catch(e){
+      console.error(e);
+      show("state-error");
+      document.getElementById("error-text").textContent=(e&&e.message)||"Could not complete sign-in. Try a new link from the app.";
+    }
+  }
+  async function onSavePassword(){
+    var p1=document.getElementById("pw1").value, p2=document.getElementById("pw2").value;
+    var errEl=document.getElementById("password-error");
+    errEl.classList.add("hidden");
+    if(p1.length<6){ errEl.textContent="Password must be at least 6 characters."; errEl.classList.remove("hidden"); return; }
+    if(p1!==p2){ errEl.textContent="Passwords do not match."; errEl.classList.remove("hidden"); return; }
+    var btn=document.getElementById("btn-save-pw");
+    btn.disabled=true;
+    var res=await supabaseClient.auth.updateUser({password:p1});
+    btn.disabled=false;
+    if(res.error){ errEl.textContent=res.error.message; errEl.classList.remove("hidden"); return; }
+    show("state-done");
+  }
+  init();
+})();
+  </script>
+</body>
+</html>

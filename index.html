@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ChurnLogic – Smarter Credit Card Planning</title>
+  <title>ChurnLogic – Never miss a deadline or leave money on the table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="ChurnLogic helps users plan well-timed, eligibility-aware credit card applications and avoid unnecessary denials." />
+  <meta name="description" content="ChurnLogic tracks your credit card deadlines, estimates dollar values on every recommendation, and tells you exactly what to do next — so you never miss an annual fee decision or signup bonus." />
   <meta name="fo-verify" content="c50dff4d-bdce-4adc-abe3-26b395b39d81" />
 
   <style>
@@ -17,6 +17,8 @@
       --muted: #9ca3af;
       --accent: #38bdf8;
       --good: #22c55e;
+      --warn: #eab308;
+      --err: #f87171;
       --radius: 16px;
     }
 
@@ -31,98 +33,6 @@
     }
 
     a { color: var(--accent); text-decoration: none; }
-
-    .strategy-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-
-    .pill {
-      font-size: 0.7rem;
-      background: rgba(34, 197, 94, 0.16);
-      color: var(--good);
-      padding: 2px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .card-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-      align-items: center;
-    }
-
-    .card-art-main,
-    .card-art-small {
-      border-radius: 8px;
-      background: radial-gradient(circle at top left, #38bdf8, #0f172a 55%);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-art-main {
-      width: 120px;
-      height: 76px;
-      flex-shrink: 0;
-    }
-
-    .card-art-small {
-      width: 52px;
-      height: 32px;
-      flex-shrink: 0;
-    }
-
-    .card-chip {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 18px;
-      height: 14px;
-      border-radius: 4px;
-      background: linear-gradient(135deg, #e5e7eb, #9ca3af);
-      opacity: 0.85;
-    }
-
-    .card-lines {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: 40px;
-      height: 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(15, 23, 42, 0.7);
-      background: rgba(15, 23, 42, 0.4);
-    }
-
-    .card-lines::before,
-    .card-lines::after {
-      content: "";
-      position: absolute;
-      left: 6px;
-      right: 6px;
-      height: 2px;
-      border-radius: 999px;
-      background: rgba(226, 232, 240, 0.75);
-    }
-
-    .card-lines::before { top: 3px; }
-    .card-lines::after { bottom: 3px; }
-
-    .substep-label {
-      font-size: 0.75rem;
-      color: var(--accent);
-    }
-
-    .substep-muted {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
 
     .container {
       max-width: 1000px;
@@ -156,7 +66,7 @@
       display: grid;
       grid-template-columns: 1.2fr 1fr;
       gap: 36px;
-      margin-bottom: 64px;
+      margin-bottom: 72px;
     }
 
     @media (max-width: 860px) {
@@ -195,6 +105,7 @@
       color: var(--muted);
     }
 
+    /* Mock action feed */
     .mock {
       background: var(--panel-soft);
       border: 1px solid var(--border);
@@ -203,34 +114,85 @@
       font-size: 0.85rem;
     }
 
-    .mock h3 {
-      font-size: 0.9rem;
-      margin-bottom: 12px;
+    .mock-title {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .action-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .action-dot.critical { background: var(--err); }
+    .action-dot.warning { background: var(--warn); }
+    .action-dot.info { background: var(--accent); }
+
+    .action-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+
+    .action-detail {
+      font-size: 0.78rem;
       color: var(--muted);
     }
 
-    .row {
+    .mock-rec {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      margin-top: 14px;
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
+      gap: 14px;
+      align-items: center;
     }
 
-    .bar {
-      height: 6px;
-      border-radius: 999px;
-      background: #020617;
+    .card-art {
+      width: 72px;
+      height: 46px;
+      border-radius: 6px;
+      background: radial-gradient(circle at top left, #38bdf8, #0f172a 55%);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      position: relative;
       overflow: hidden;
-      margin-top: 8px;
+      flex-shrink: 0;
     }
 
-    .bar > div {
-      height: 100%;
-      width: 72%;
-      background: linear-gradient(to right, var(--good), #eab308);
+    .card-chip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 14px;
+      height: 10px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+      opacity: 0.85;
     }
+
+    .rec-name { font-weight: 600; font-size: 0.85rem; }
+    .rec-value { color: var(--good); font-size: 0.8rem; font-weight: 600; }
+    .rec-net { font-size: 0.75rem; color: var(--muted); }
 
     /* Sections */
-    section { margin-bottom: 56px; }
+    section { margin-bottom: 64px; }
 
     h2 {
       font-size: 1.5rem;
@@ -249,21 +211,40 @@
       gap: 20px;
     }
 
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
     @media (max-width: 860px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid, .grid-2 { grid-template-columns: 1fr; }
     }
 
     .card {
       background: var(--panel-soft);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 20px;
       font-size: 0.9rem;
     }
 
     .card h3 { margin-bottom: 6px; font-size: 1rem; }
 
     .card p { color: var(--muted); }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
 
     ul { list-style: none; margin-top: 8px; }
 
@@ -276,9 +257,46 @@
     }
 
     ul li::before {
-      content: "•";
+      content: "\2022";
       color: var(--accent);
     }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      counter-reset: step;
+    }
+
+    @media (max-width: 860px) {
+      .steps { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 500px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    .step {
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      font-size: 0.9rem;
+      counter-increment: step;
+    }
+
+    .step h3::before {
+      content: counter(step) ". ";
+      color: var(--accent);
+    }
+
+    .step h3 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .step p { color: var(--muted); font-size: 0.85rem; }
 
     footer {
       border-top: 1px solid var(--border);
@@ -295,6 +313,7 @@
     <header>
       <div class="logo">ChurnLogic</div>
       <nav>
+        <a href="#features">Features</a>
         <a href="#how">How it works</a>
         <a href="#partners">For partners</a>
         <a href="#about">About</a>
@@ -304,69 +323,103 @@
     <main>
       <section class="hero">
         <div>
-          <h1>Smarter credit card planning<br /><span>without spreadsheets or guesswork</span></h1>
+          <h1>Never miss a deadline<br /><span>or leave money on the table</span></h1>
           <p>
-            ChurnLogic is a consumer app that helps users decide when they’re eligible to apply for credit cards,
-            track welcome bonuses, and avoid unnecessary denials through intentional, rule-aware planning.
+            ChurnLogic tells you exactly what to do and when. Track your 5/24 status, see dollar
+            estimates on every card, get warned before annual fees hit, and follow a personalized
+            application plan with issuer-aware timing.
           </p>
           <a class="cta" href="/waitlist.html">Join the beta waitlist</a>
           <div class="cta-note">Early access. No spam. No selling user data.</div>
         </div>
 
         <div class="mock">
-          <div class="strategy-header">
-            <h3>Personalized Strategy</h3>
-            <span class="pill">Verified 0/24 status</span>
+          <div class="mock-title">Needs attention</div>
+
+          <div class="action-item">
+            <div class="action-dot critical"></div>
+            <div>
+              <div class="action-label">MSR deadline in 12 days</div>
+              <div class="action-detail">Amex Gold &mdash; $1,200 left of $4,000 spend requirement</div>
+            </div>
           </div>
 
-          <!-- Main recommended card -->
-          <div class="card-row" style="margin-bottom: 20px;">
-            <div class="card-art-main" aria-hidden="true">
+          <div class="action-item">
+            <div class="action-dot warning"></div>
+            <div>
+              <div class="action-label">Annual fee hits in 28 days</div>
+              <div class="action-detail">Chase Sapphire Preferred &mdash; downgrade to Freedom Flex or keep for $95/yr</div>
+            </div>
+          </div>
+
+          <div class="action-item">
+            <div class="action-dot info"></div>
+            <div>
+              <div class="action-label">Chase cooldown ends in 5 days</div>
+              <div class="action-detail">You can safely apply for your next Chase card</div>
+            </div>
+          </div>
+
+          <div class="mock-rec">
+            <div class="card-art" aria-hidden="true">
               <div class="card-chip"></div>
-              <div class="card-lines"></div>
             </div>
             <div>
-              <div style="font-weight: 600; font-size: 1rem;">Chase Sapphire Preferred</div>
-              <div style="color: var(--good); font-size: 0.8rem; font-weight: 600;">High approval confidence</div>
-              <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">
-                Based on your current profile and recent applications.
-              </div>
+              <div class="rec-name">Next: Chase Ink Business Preferred</div>
+              <div class="rec-value">100,000 pts &mdash; est. ~$1,250</div>
+              <div class="rec-net">Net after $95 AF = $1,155 first-year value</div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="row" style="font-size: 0.8rem; margin-bottom: 4px;">
-            <span>Welcome bonus</span><strong>60,000 points (est. value ~$750)</strong>
+      <section id="features">
+        <h2>What ChurnLogic does</h2>
+        <p class="section-text">
+          A proactive companion that watches your deadlines, estimates real dollar values,
+          and surfaces the decisions that matter &mdash; before you miss them.
+        </p>
+        <div class="grid">
+          <div class="card">
+            <div class="feature-icon">$</div>
+            <h3>Dollar values on everything</h3>
+            <p>Every recommendation shows estimated dollar value and net first-year return after the annual fee, so you can compare cards in terms that actually matter.</p>
           </div>
-          <div class="row" style="font-size: 0.8rem;">
-            <span>Application timing</span><strong>Eligibility met</strong>
+          <div class="card">
+            <div class="feature-icon">!</div>
+            <h3>Proactive action feed</h3>
+            <p>Your home screen shows what needs attention now: MSR deadlines approaching, annual fee decisions due, velocity cooldowns ending, and 5/24 slots opening up.</p>
           </div>
-          <div class="bar" style="margin: 10px 0 22px;"><div></div></div>
+          <div class="card">
+            <div class="feature-icon">&#8595;</div>
+            <h3>Annual fee decisions</h3>
+            <p>30&ndash;60 days before an annual fee hits, ChurnLogic shows your options: keep the card, downgrade to a no-fee version, or cancel &mdash; with specific product-change targets.</p>
+          </div>
+          <div class="card">
+            <div class="feature-icon">5</div>
+            <h3>5/24 and drop dates</h3>
+            <p>Tracks your Chase 5/24 status and shows exactly when each card drops off, so you know when to apply without guessing.</p>
+          </div>
+          <div class="card">
+            <div class="feature-icon">&#9201;</div>
+            <h3>Issuer cooldowns</h3>
+            <p>Per-issuer velocity timers for Chase, Amex, Citi, Barclays, and US Bank. Know exactly when you're eligible again instead of counting months manually.</p>
+          </div>
+          <div class="card">
+            <div class="feature-icon">&#9993;</div>
+            <h3>Deadline notifications</h3>
+            <p>Push alerts with card names, dollar amounts, and specific deadlines. "Your CSP annual fee hits in 30 days" &mdash; not generic reminders.</p>
+          </div>
+        </div>
 
-          <!-- Roadmap -->
-          <div style="border-top: 1px solid var(--border); padding-top: 18px;">
-            <h4 style="font-size: 0.75rem; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
-              Next six months
-            </h4>
-
-            <div class="card-row" style="margin-bottom: 12px;">
-              <div class="card-art-small" aria-hidden="true">
-                <div class="card-chip" style="top: 6px; left: 6px; width: 14px; height: 10px;"></div>
-              </div>
-              <div>
-                <div style="font-size: 0.85rem;">Amex Gold Card</div>
-                <div class="substep-label">Wait 90 days</div>
-              </div>
-            </div>
-
-            <div class="card-row" style="opacity: 0.8;">
-              <div class="card-art-small" aria-hidden="true" style="filter: grayscale(25%);">
-                <div class="card-chip" style="top: 6px; left: 6px; width: 14px; height: 10px;"></div>
-              </div>
-              <div>
-                <div style="font-size: 0.85rem;">Capital One Venture X</div>
-                <div class="substep-muted">Step 3 in your plan</div>
-              </div>
-            </div>
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="card">
+            <h3>Credit report import</h3>
+            <p>Import a PDF or JSON credit report to auto-detect your cards, open dates, and 5/24 status. Everything stays on-device.</p>
+          </div>
+          <div class="card">
+            <h3>67-card catalog</h3>
+            <p>Strategy notes, issuer rules, and eligibility logic for cards from Chase, Amex, Citi, Capital One, Barclays, US Bank, and more.</p>
           </div>
         </div>
       </section>
@@ -374,24 +427,24 @@
       <section id="how">
         <h2>How it works</h2>
         <p class="section-text">
-          ChurnLogic focuses on intent and timing, not hype or shortcuts.
+          Set up once, then ChurnLogic keeps watch. No spreadsheets, no mental math, no missed deadlines.
         </p>
-        <p class="section-text">
-          ChurnLogic is designed to reduce low-quality or premature applications by incorporating issuer rules,
-          waiting periods, and eligibility signals before any recommendation is shown.
-        </p>
-        <div class="grid">
-          <div class="card">
-            <h3>1. Add your cards</h3>
-            <p>Users enter existing cards and open dates to establish eligibility constraints.</p>
+        <div class="steps">
+          <div class="step">
+            <h3>Add your cards</h3>
+            <p>Enter existing cards manually or import a credit report to auto-detect them.</p>
           </div>
-          <div class="card">
-            <h3>2. Set goals</h3>
-            <p>Travel, cashback, or simplicity — recommendations adapt to user intent.</p>
+          <div class="step">
+            <h3>Set your goals</h3>
+            <p>Travel, cashback, or hotel rewards. Recommendations adapt to what you want.</p>
           </div>
-          <div class="card">
-            <h3>3. Follow a plan</h3>
-            <p>ChurnLogic generates a clear application path with guardrails.</p>
+          <div class="step">
+            <h3>Follow the plan</h3>
+            <p>A personalized application path with issuer-aware timing, cooldowns, and eligibility guardrails.</p>
+          </div>
+          <div class="step">
+            <h3>Stay on top of it</h3>
+            <p>The action feed and push notifications surface deadlines and decisions before you miss them.</p>
           </div>
         </div>
       </section>

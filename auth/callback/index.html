@@ -88,11 +88,37 @@
     return APP_DEEP_LINK_BASE;
   }
   async function init(){
-    supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{detectSessionInUrl:true,persistSession:false}});
     var fragment=parseFragment(), query=parseQuery();
     var authType=fragment.type||query.type||"";
     var flowRecovery=(query.flow==="recovery");
     var code=query.code;
+    var hashHasTokens=window.location.hash&&window.location.hash.indexOf("access_token")!==-1;
+    var hasAuthData=!!code||hashHasTokens||(fragment.access_token&&fragment.refresh_token);
+    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // Mobile shortcut: deep-link straight to the app WITHOUT consuming the
+    // PKCE code here. The app's deep-link handler will exchange it. If we
+    // exchanged it on the web first, the code would be invalid by the time
+    // the app sees it, and the app's auth would silently fail.
+    if(isMobile && hasAuthData){
+      var deepLinkMobile=buildAppDeepLink();
+      // Show a fallback UI in case the deep-link redirect fails (no app
+      // installed, scheme not registered, etc.).
+      show("state-app");
+      document.getElementById("open-app").href=deepLinkMobile;
+      document.getElementById("app-hint").textContent="If the app doesn't open automatically, tap 'Open ChurnLogic' above.";
+      document.getElementById("app-sub-mobile").classList.remove("hidden");
+      document.getElementById("app-sub-desktop").classList.add("hidden");
+      // Auto-redirect \u2014 most mobile browsers honor this for custom schemes
+      // when triggered as a navigation rather than an iframe.
+      window.location.href=deepLinkMobile;
+      return;
+    }
+
+    // Desktop (or mobile without auth data \u2014 e.g. someone hit the URL
+    // directly without coming from an email): handle the flow in the
+    // browser via the JS SDK.
+    supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{detectSessionInUrl:true,persistSession:false}});
     try{
       if(code){
         var ex=await supabaseClient.auth.exchangeCodeForSession(window.location.href);
@@ -110,19 +136,13 @@
         document.getElementById("btn-save-pw").onclick=onSavePassword;
         return;
       }
-      var deepLink=buildAppDeepLink();
-      var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // Desktop magic-link / signup-confirm: show "you're signed in on the
+      // web" message. ChurnLogic is a mobile-first product, so steer users
+      // to their phone.
       show("state-app");
-      document.getElementById("open-app").href=deepLink;
-      document.getElementById("app-hint").textContent="If the button doesn't work, copy this link and open it on your phone: "+deepLink;
-      // Show desktop-aware copy so users on a laptop don't see "tap to open"
-      // and end up confused when the deep link does nothing.
-      document.getElementById("app-sub-mobile").classList.toggle("hidden", !isMobile);
-      document.getElementById("app-sub-desktop").classList.toggle("hidden", isMobile);
-      var openBtn=document.getElementById("open-app");
-      if(!isMobile){ openBtn.classList.add("hidden"); }
-      var hashHasTokens=window.location.hash&&window.location.hash.indexOf("access_token")!==-1;
-      if(hashHasTokens&&isMobile) window.location.href=deepLink;
+      document.getElementById("app-sub-mobile").classList.add("hidden");
+      document.getElementById("app-sub-desktop").classList.remove("hidden");
+      document.getElementById("open-app").classList.add("hidden");
     }catch(e){
       console.error(e);
       show("state-error");

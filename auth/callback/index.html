@@ -39,7 +39,8 @@
     </div>
     <div id="state-app" class="hidden">
       <h1>You're signed in</h1>
-      <p class="sub">Open the ChurnLogic app on your phone to continue. If the app doesn't open automatically, use the button below.</p>
+      <p class="sub" id="app-sub-mobile">Open the ChurnLogic app on your phone to continue. If the app doesn't open automatically, use the button below.</p>
+      <p class="sub hidden" id="app-sub-desktop">You're signed in on the web. ChurnLogic is a mobile app — finish signing in on your phone (iOS or Android) using the same email.</p>
       <a class="btn btn-primary" id="open-app" href="#">Open ChurnLogic</a>
       <p class="mono" id="app-hint"></p>
     </div>
@@ -53,7 +54,11 @@
       <p class="ok">Your password is saved. Close this tab and sign in with your email and new password in the ChurnLogic app.</p>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"
+    integrity="sha384-YieCqqg9gQufX7+5HcFvCEg/n3KUEdl8/Jb+A6J0npf1mB740VayvwKjTrtCeUoy"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
   <script>
 (function(){
   var SUPABASE_URL="https://sxbrkvzdbetijwjwxkpb.supabase.co";
@@ -106,11 +111,18 @@
         return;
       }
       var deepLink=buildAppDeepLink();
+      var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       show("state-app");
       document.getElementById("open-app").href=deepLink;
       document.getElementById("app-hint").textContent="If the button doesn't work, copy this link and open it on your phone: "+deepLink;
+      // Show desktop-aware copy so users on a laptop don't see "tap to open"
+      // and end up confused when the deep link does nothing.
+      document.getElementById("app-sub-mobile").classList.toggle("hidden", !isMobile);
+      document.getElementById("app-sub-desktop").classList.toggle("hidden", isMobile);
+      var openBtn=document.getElementById("open-app");
+      if(!isMobile){ openBtn.classList.add("hidden"); }
       var hashHasTokens=window.location.hash&&window.location.hash.indexOf("access_token")!==-1;
-      if(hashHasTokens&&/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) window.location.href=deepLink;
+      if(hashHasTokens&&isMobile) window.location.href=deepLink;
     }catch(e){
       console.error(e);
       show("state-error");
@@ -121,7 +133,7 @@
     var p1=document.getElementById("pw1").value, p2=document.getElementById("pw2").value;
     var errEl=document.getElementById("password-error");
     errEl.classList.add("hidden");
-    if(p1.length<6){ errEl.textContent="Password must be at least 6 characters."; errEl.classList.remove("hidden"); return; }
+    if(p1.length<8){ errEl.textContent="Password must be at least 8 characters."; errEl.classList.remove("hidden"); return; }
     if(p1!==p2){ errEl.textContent="Passwords do not match."; errEl.classList.remove("hidden"); return; }
     var btn=document.getElementById("btn-save-pw");
     btn.disabled=true;

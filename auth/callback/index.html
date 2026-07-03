@@ -112,6 +112,10 @@
       // Auto-redirect \u2014 most mobile browsers honor this for custom schemes
       // when triggered as a navigation rather than an iframe.
       window.location.href=deepLinkMobile;
+      // Scrub tokens/codes from this page's URL so they don't persist in
+      // browser history on shared devices. Must run AFTER the deep link is
+      // built and the redirect is triggered (both read the URL above).
+      history.replaceState(null,"",window.location.pathname);
       return;
     }
 
@@ -131,6 +135,10 @@
         document.getElementById("error-text").textContent="This link is missing authentication data. It may have expired\u2014request a new one from the app.";
         return;
       }
+      // Session established \u2014 scrub tokens/codes from the URL so they
+      // don't persist in browser history. authType/flowRecovery were
+      // already parsed above, so nothing past this point reads the URL.
+      history.replaceState(null,"",window.location.pathname);
       if(authType==="recovery"||flowRecovery){
         show("state-password");
         document.getElementById("btn-save-pw").onclick=onSavePassword;

@@ -67,6 +67,19 @@ nav a.active {
   background: rgba(56, 189, 248, 0.1);
 }
 
+/* Log in — CTA into the web app */
+nav a.login {
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 600;
+  margin-left: 6px;
+}
+nav a.login:hover {
+  color: var(--bg);
+  background: var(--accent);
+  opacity: 0.9;
+}
+
 /* Page title */
 .page-title {
   font-size: clamp(2rem, 3vw, 2.6rem);

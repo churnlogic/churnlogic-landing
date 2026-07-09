@@ -332,3 +332,10 @@ footer p { margin-bottom: 6px; }
   background: rgba(16, 185, 129, 0.2);
   color: #34d399;
 }
+
+/* Affiliate / advertiser disclosure shown next to an affiliate link */
+.affiliate-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 10px;
+}
